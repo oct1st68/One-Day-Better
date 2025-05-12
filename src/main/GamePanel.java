@@ -27,7 +27,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public GamePanel(int width, int height) {
         this.setPreferredSize(new Dimension(ScreenWidth, ScreenHeight));
-        this.setBackground(Color.BLACK);
+        this.setBackground(Color.WHITE);
         this.setDoubleBuffered(true);
         
         // Initialize game entities
@@ -104,6 +104,9 @@ public class GamePanel extends JPanel implements Runnable {
         if (keyboardInput.meowPressed) {
             cat.meow();
         }
+        if (keyboardInput.headbuttPressed) {
+            cat.headbutt(human);
+        }
         cat.update();
     }
 
@@ -115,7 +118,6 @@ public class GamePanel extends JPanel implements Runnable {
         // Draw entities
         human.draw(g2);
         cat.draw(g2);
-        
         g2.dispose();
     }
 }

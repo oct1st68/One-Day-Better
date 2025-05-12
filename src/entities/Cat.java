@@ -5,6 +5,10 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import java.io.File;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Map;
 
 public class Cat {
     private int x, y;
@@ -16,11 +20,30 @@ public class Cat {
     private boolean isFacingRight = true;
     private String currentAnimation = "idle";
     private Clip meowSound;
+    private String meowSoundPath = "res/sounds/meow.wav";
+    private Map<String, BufferedImage> animations;
+    
+    // Sprite related fields
+    private BufferedImage sprite;
+    private static final String ANIM_PAW = "pawing";
+    private static final String ANIM_HEADBUTT = "headbutting";
+    private static final String ANIM_MEOW = "meowing";
+    private int spriteWidth = 64;  
+    private int spriteHeight = 64; 
 
     public Cat(int x, int y) {
         this.x = x;
         this.y = y;
         loadMeowSound();
+        loadSprite();
+    }
+
+    private void loadSprite() {
+        try {
+            sprite = ImageIO.read(new File("res/sprites/cat/cat.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void update() {
@@ -29,32 +52,59 @@ public class Cat {
         y += velocityY;
         
         // Ground collision
-        if (y > 400) {
-            y = 400;
+        if (y > 550) {
+            y = 550;
             velocityY = 0;
             isJumping = false;
         }
     }
 
     public void draw(Graphics2D g2d) {
-            
+        BufferedImage image = sprite;
+        g2d.drawImage(image, x, y, spriteWidth, spriteHeight, null);
+        if (sprite != null) {
+            // Draw the sprite
+            if (!isFacingRight) {
+                // Flip the sprite horizontally when facing left
+                g2d.drawImage(sprite, x + spriteWidth, y, -spriteWidth, spriteHeight, null);
+            } else {
+                g2d.drawImage(sprite, x, y, spriteWidth, spriteHeight, null);
+            }
+        } else {
+            // Fallback rectangle if sprite fails to load
+            g2d.setColor(Color.ORANGE);
+            g2d.fillRect(x, y, spriteWidth, spriteHeight);
+        }
     }
+
     private void loadMeowSound() {
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new 
-            File("res/sounds/y2mate.com - Cat meow sound effect.mp3"));
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(meowSoundPath));
             meowSound = AudioSystem.getClip();
             meowSound.open(audioInputStream);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public void meow(){
+
+    public void meow() {
         currentAnimation = "meowing";
         try {
             if (meowSound != null) {
                 meowSound.setFramePosition(0);
                 meowSound.start();
+                
+                // Stop the sound after 1.5 seconds
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(1500); // 1.5 seconds
+                        if (meowSound.isRunning()) {
+                            meowSound.stop();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -95,10 +145,10 @@ public class Cat {
         }
     }
 
-    //private boolean isNearHuman(Human human) {
-        
-        //return catBounds.intersects(humanBounds);
-    //}
+    private boolean isNearHuman(Human human) {
+        int distance = Math.abs(x - human.getX());
+        return distance < 50; 
+    }
 
     public void setPosition(int x, int y) {
         this.x = x;

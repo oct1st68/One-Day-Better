@@ -1,6 +1,14 @@
 package entities;
 import java.awt.Graphics2D;
 import java.awt.Color;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.File;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Map;
 
 public class Human {
     private int x, y;
@@ -9,10 +17,21 @@ public class Human {
     private String currentTask = "idle";
     private int taskProgress = 0;
     private int currentRoom = 0;
+    private BufferedImage sprite;
+
 
     public Human(int x, int y) {
         this.x = x;
         this.y = y;
+        loadSprite();
+    }
+
+    private void loadSprite() {
+        try {
+            sprite = ImageIO.read(new File("res/sprites/human/human.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void update() {
@@ -26,19 +45,7 @@ public class Human {
     }
 
     public void draw(Graphics2D g2d) {
-        // Draw body
-        g2d.setColor(Color.BLUE);
-        g2d.fillRect(x, y, 32, 48);
-        
-        // Draw head
-        g2d.setColor(Color.PINK);
-        g2d.fillOval(x + 8, y - 16, 16, 16);
-        
-        // Draw task progress
-        if (!currentTask.equals("idle")) {
-            g2d.setColor(Color.BLACK);
-            g2d.drawString(currentTask + ": " + taskProgress + "%", x, y - 20);
-        }
+        g2d.drawImage(sprite, x, y, null);
     }
 
     public void moveToNextRoom() {
