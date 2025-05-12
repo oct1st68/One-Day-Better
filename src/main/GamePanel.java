@@ -3,7 +3,6 @@ package main;
 import input.KeyboardInput;
 import entities.Human;
 import entities.Cat;
-import entities.Environment;
 
 import javax.swing.JPanel;
 import java.awt.*;
@@ -24,7 +23,6 @@ public class GamePanel extends JPanel implements Runnable {
     // Game entities
     private Human human;
     private Cat cat;
-    private Environment environment;
     private KeyboardInput keyboardInput;
 
     public GamePanel(int width, int height) {
@@ -35,7 +33,6 @@ public class GamePanel extends JPanel implements Runnable {
         // Initialize game entities
         human = new Human(100, 300);
         cat = new Cat(50, 300);
-        environment = new Environment();
         keyboardInput = new KeyboardInput();
         
         // Setup input handling
@@ -114,16 +111,6 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         
-        // Draw background based on current room
-        g2.setColor(environment.getRoomColor(human.getCurrentRoom()));
-        g2.fillRect(0, 0, ScreenWidth, ScreenHeight);
-        
-        // Draw room name
-        g2.setColor(Color.BLACK);
-        g2.drawString(environment.getCurrentRoom(human.getCurrentRoom()), 10, 20);
-        
-        // Draw controls help text
-        g2.drawString("Controls: WASD to move, SPACE to meow, E to interact", 10, ScreenHeight - 10);
         
         // Draw entities
         human.draw(g2);
