@@ -1,8 +1,8 @@
 package main;
 
 import input.KeyboardInput;
-import entities.Human;
-import entities.Cat;
+import input.MouseInput;
+import states.GameStateManager;
 
 import javax.swing.JPanel;
 import java.awt.*;
@@ -20,24 +20,28 @@ public class GamePanel extends JPanel implements Runnable {
     // FPS
     int FPS = 60;
 
-    // Game entities
-    private Human human;
-    private Cat cat;
+    // Game state manager
+    private GameStateManager gsm;
     private KeyboardInput keyboardInput;
+    private MouseInput mouseInput;
 
     public GamePanel(int width, int height) {
         this.setPreferredSize(new Dimension(ScreenWidth, ScreenHeight));
         this.setBackground(Color.WHITE);
         this.setDoubleBuffered(true);
         
-        // Initialize game entities
-        human = new Human(100, 300);
-        cat = new Cat(50, 300);
+        // Initialize input
         keyboardInput = new KeyboardInput();
+        mouseInput = new MouseInput();
+        
+        // Initialize game state manager with this panel
+        gsm = new GameStateManager(this);
         
         // Setup input handling
         this.setFocusable(true);
         this.addKeyListener(keyboardInput);
+        this.addMouseListener(mouseInput);
+        this.addMouseMotionListener(mouseInput);
         this.requestFocus();
     }
 
@@ -85,39 +89,23 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        // Update human
-        human.update();
-        
-        // Update cat based on keyboard input
-        if (keyboardInput.leftPressed) {
-            cat.moveLeft();
-        }
-        if (keyboardInput.rightPressed) {
-            cat.moveRight();
-        }
-        if (keyboardInput.upPressed) {
-            cat.jump();
-        }
-        if (keyboardInput.interactPressed) {
-            cat.paw(human);
-        }
-        if (keyboardInput.meowPressed) {
-            cat.meow();
-        }
-        if (keyboardInput.headbuttPressed) {
-            cat.headbutt(human);
-        }
-        cat.update();
+        gsm.update();
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         
+        gsm.draw(g2);
         
-        // Draw entities
-        human.draw(g2);
-        cat.draw(g2);
         g2.dispose();
+    }
+
+    public MouseInput getMouseInput() {
+        return mouseInput;
+    }
+
+    public KeyboardInput getKeyboardInput() {
+        return keyboardInput;
     }
 }

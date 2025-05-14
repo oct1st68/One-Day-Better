@@ -4,8 +4,9 @@ import java.awt.event.KeyListener;
 
 
 public class KeyboardInput implements KeyListener {
-    public boolean upPressed, downPressed, leftPressed, rightPressed;
+    public boolean upPressed, leftPressed, rightPressed;
     public boolean interactPressed, meowPressed, headbuttPressed;
+    public boolean escapePressed, enterPressed;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -18,9 +19,6 @@ public class KeyboardInput implements KeyListener {
         switch(key){
             case KeyEvent.VK_W:
                 upPressed = true;
-                break;
-            case KeyEvent.VK_S:
-                downPressed = true;
                 break;
             case KeyEvent.VK_A:
                 leftPressed = true;
@@ -37,6 +35,12 @@ public class KeyboardInput implements KeyListener {
             case KeyEvent.VK_Q:
                 headbuttPressed = true;
                 break;
+            case KeyEvent.VK_ESCAPE:
+                escapePressed = true;
+                break;
+            case KeyEvent.VK_ENTER:
+                enterPressed = true;
+                break;
         }
 
     }
@@ -46,9 +50,6 @@ public class KeyboardInput implements KeyListener {
         switch(key){
             case KeyEvent.VK_W:
                 upPressed = false;
-                break;
-            case KeyEvent.VK_S:
-                downPressed = false;
                 break;
             case KeyEvent.VK_A:
                 leftPressed = false;
@@ -64,6 +65,12 @@ public class KeyboardInput implements KeyListener {
                 break;
             case KeyEvent.VK_Q:
                 headbuttPressed = false;
+                break;
+            case KeyEvent.VK_ESCAPE:
+                escapePressed = false;
+                break;
+            case KeyEvent.VK_ENTER:
+                enterPressed = false;
                 break;
         }
     }

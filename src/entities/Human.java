@@ -1,23 +1,22 @@
 package entities;
 import java.awt.Graphics2D;
 import java.awt.Color;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import java.io.File;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Map;
 
 public class Human {
     private int x, y;
     private int speed = 3;
     private boolean isMoving = false;
+    private boolean isFollowing = false;
     private String currentTask = "idle";
     private int taskProgress = 0;
     private int currentRoom = 0;
     private BufferedImage sprite;
+    private Cat targetCat;
+    private boolean isFacingRight = true;
 
 
     public Human(int x, int y) {
@@ -35,8 +34,25 @@ public class Human {
     }
 
     public void update() {
-        if (isMoving) {
+        if (isFollowing && targetCat != null) {
+            // Move towards the cat
+            int targetX = targetCat.getX();
+            int distanceX = Math.abs(x - targetX);
+            if (distanceX > 10) {
+                if (x < targetX) {
+                    x += speed;
+                    isFacingRight = true;
+                } else {
+                    x -= speed;
+                    isFacingRight = false;
+                }
+            } else {
+                // Stop when close enough
+                stopFollowing();
+            }
+        } else if (isMoving) {
             x += speed;
+            isFacingRight = true;
             if (x > 800) {
                 x = 0;
                 currentRoom = (currentRoom + 1) % 3;
@@ -46,6 +62,16 @@ public class Human {
 
     public void draw(Graphics2D g2d) {
         g2d.drawImage(sprite, x, y, null);
+    }
+
+    public void draw(Graphics2D g2d, int offsetX, int offsetY) {
+        if (sprite != null) {
+            if (!isFacingRight) {
+                g2d.drawImage(sprite, x + offsetX + sprite.getWidth(), y + offsetY, -sprite.getWidth(), sprite.getHeight(), null);
+            } else {
+                g2d.drawImage(sprite, x + offsetX, y + offsetY, null);
+            }
+        }
     }
 
     public void moveToNextRoom() {
@@ -80,5 +106,17 @@ public class Human {
 
     public int getCurrentRoom() {
         return currentRoom;
+    }
+
+    public void startFollowing(Cat cat) {
+        this.targetCat = cat;
+        this.isFollowing = true;
+        this.currentTask = "Following cat...";
+    }
+
+    public void stopFollowing() {
+        this.isFollowing = false;
+        this.targetCat = null;
+        this.currentTask = "idle";
     }
 }

@@ -7,9 +7,8 @@ import javax.sound.sampled.Clip;
 import java.io.File;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.Map;
-
+import java.io.IOException;
 public class Cat {
     private int x, y;
     private int speed = 5;
@@ -21,7 +20,6 @@ public class Cat {
     private String currentAnimation = "idle";
     private Clip meowSound;
     private String meowSoundPath = "res/sounds/meow.wav";
-    private Map<String, BufferedImage> animations;
     
     // Sprite related fields
     private BufferedImage sprite;
@@ -77,6 +75,22 @@ public class Cat {
         }
     }
 
+    public void draw(Graphics2D g2d, int offsetX, int offsetY) {
+        BufferedImage image = sprite;
+        int drawX = x + offsetX;
+        int drawY = y + offsetY;
+        if (sprite != null) {
+            if (!isFacingRight) {
+                g2d.drawImage(sprite, drawX + spriteWidth, drawY, -spriteWidth, spriteHeight, null);
+            } else {
+                g2d.drawImage(sprite, drawX, drawY, spriteWidth, spriteHeight, null);
+            }
+        } else {
+            g2d.setColor(Color.ORANGE);
+            g2d.fillRect(drawX, drawY, spriteWidth, spriteHeight);
+        }
+    }
+
     private void loadMeowSound() {
         try {
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(meowSoundPath));
@@ -110,17 +124,36 @@ public class Cat {
             e.printStackTrace();
         }
     }
+
+    public void meow(Human human) {
+        meow();
+        if (human != null) {
+            // Wait 1 second before starting to follow
+            new Thread(() -> {
+                try {
+                    Thread.sleep(1000); // 1 second delay
+                    human.startFollowing(this);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
+    }
         
     public void moveLeft() {
-        x -= speed;
-        isFacingRight = false;
-        currentAnimation = "walking";
+        if (x > 0) {
+            x -= speed;
+            isFacingRight = false;
+            currentAnimation = "walking";
+        }
     }
 
     public void moveRight() {
-        x += speed;
-        isFacingRight = true;
-        currentAnimation = "walking";
+        if (x < 2000) {
+            x += speed;
+            isFacingRight = true;
+            currentAnimation = "walking";
+        }
     }
 
     public void jump() {
@@ -133,8 +166,24 @@ public class Cat {
 
     public void headbutt(Human human) {
         if (isNearHuman(human)) {
-            human.moveToNextRoom();
-            currentAnimation = "headbutting";
+            // Only headbutt if facing the human
+            boolean isFacingHuman = (isFacingRight && human.getX() > x) || 
+                                  (!isFacingRight && human.getX() < x);
+            
+            if (isFacingHuman) {
+                human.moveToNextRoom();
+                currentAnimation = "headbutting";
+                
+                // Return to idle animation after headbutt
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(500);
+                        currentAnimation = "idle";
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+            }
         }
     }
 
