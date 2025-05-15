@@ -128,7 +128,7 @@ public class Cat {
 
     public void meow(Human human) {
         meow();
-        if (human != null) {
+        if (human != null && !human.isCurrentRoomTasksCompleted()) {
             // Wait 1 second before starting to follow
             new Thread(() -> {
                 try {
@@ -174,7 +174,7 @@ public class Cat {
             boolean isFacingHuman = (isFacingRight && human.getX() > x) || 
                                   (!isFacingRight && human.getX() < x);
             
-            if (isFacingHuman) {
+            if (isFacingHuman && human.isCurrentRoomTasksCompleted()) {
                 human.moveToNextRoom();
             }
         }
@@ -194,8 +194,8 @@ public class Cat {
         // Always show animation when button is pressed
         currentAnimation = ANIM_PAW;
         
-        // Only perform action if near human
-        if (isNearHuman(human)) {
+        // Only perform action if near human and current room tasks are not completed
+        if (isNearHuman(human) && !human.isCurrentRoomTasksCompleted()) {
             human.interactWithCurrentObject();
         }
         

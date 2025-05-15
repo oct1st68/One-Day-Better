@@ -17,11 +17,19 @@ public class Human {
     private BufferedImage sprite;
     private Cat targetCat;
     private boolean isFacingRight = true;
-
+    private int startX;  // Store starting X position
+    private int startY;  // Store starting Y position
+    private boolean shouldReturnToStart = false;
+    private long followEndTime = 0;
+    private static final long RETURN_DELAY = 4000; // 4 seconds delay
+    private boolean[] roomTasksCompleted = new boolean[3]; // Track completed tasks for each room
+    private boolean isInteractingWithObject = false;  // New field to track if human is currently interacting
 
     public Human(int x, int y) {
         this.x = x;
         this.y = y;
+        this.startX = x;  // Initialize starting position
+        this.startY = y;
         loadSprite();
     }
 
@@ -49,6 +57,8 @@ public class Human {
             } else {
                 // Stop when close enough
                 stopFollowing();
+                followEndTime = System.currentTimeMillis();
+                shouldReturnToStart = true;
             }
         } else if (isMoving) {
             x += speed;
@@ -56,9 +66,27 @@ public class Human {
             if (x > 800) {
                 x = 0;
                 currentRoom = (currentRoom + 1) % 3;
-                isMoving = false;  // Stop moving after reaching the next room
+                isMoving = false;
                 currentTask = "idle";
+                isInteractingWithObject = false;  // Reset interaction state when moving to new room
             }
+        } else if (shouldReturnToStart && currentTask.equals("idle") && !isInteractingWithObject) {
+            if (System.currentTimeMillis() - followEndTime >= RETURN_DELAY) {
+                returnToStart();
+            }
+        }
+    }
+
+    private void returnToStart() {
+        if (x < startX) {
+            x += speed;
+            isFacingRight = true;
+        } else if (x > startX) {
+            x -= speed;
+            isFacingRight = false;
+        } else {
+            shouldReturnToStart = false;
+            currentTask = "idle";
         }
     }
 
@@ -77,22 +105,36 @@ public class Human {
     }
 
     public void moveToNextRoom() {
-        if (!isMoving && !isFollowing) {  // Only start moving if not already moving or following
+        if (!isMoving && !isFollowing && roomTasksCompleted[currentRoom]) {
             isMoving = true;
             currentTask = "Moving to next room...";
+            isInteractingWithObject = false;  // Reset interaction state
+            if (currentRoom < 2) {
+                roomTasksCompleted[currentRoom + 1] = false;
+            }
         }
     }
 
     public void interactWithCurrentObject() {
-        if (currentTask.equals("idle")) {
+        if (!isInteractingWithObject && currentTask.equals("idle")) {
+            isInteractingWithObject = true;
             currentTask = "Working on task...";
             taskProgress = 0;
         }
-        taskProgress += 10;
-        if (taskProgress >= 100) {
-            currentTask = "idle";
-            taskProgress = 0;
+        
+        if (isInteractingWithObject) {
+            taskProgress += 10;
+            if (taskProgress >= 100) {
+                currentTask = "idle";
+                taskProgress = 0;
+                isInteractingWithObject = false;
+                roomTasksCompleted[currentRoom] = true;
+            }
         }
+    }
+
+    public boolean isCurrentRoomTasksCompleted() {
+        return roomTasksCompleted[currentRoom];
     }
 
     public void setPosition(int x, int y) {
