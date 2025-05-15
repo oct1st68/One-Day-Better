@@ -56,6 +56,8 @@ public class Human {
             if (x > 800) {
                 x = 0;
                 currentRoom = (currentRoom + 1) % 3;
+                isMoving = false;  // Stop moving after reaching the next room
+                currentTask = "idle";
             }
         }
     }
@@ -75,8 +77,10 @@ public class Human {
     }
 
     public void moveToNextRoom() {
-        isMoving = true;
-        currentTask = "Moving to next room...";
+        if (!isMoving && !isFollowing) {  // Only start moving if not already moving or following
+            isMoving = true;
+            currentTask = "Moving to next room...";
+        }
     }
 
     public void interactWithCurrentObject() {

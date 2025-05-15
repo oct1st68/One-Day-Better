@@ -23,6 +23,8 @@ public class Cat {
     
     // Sprite related fields
     private BufferedImage sprite;
+    private BufferedImage pawing;
+    private BufferedImage headbutting;
     private static final String ANIM_PAW = "pawing";
     private static final String ANIM_HEADBUTT = "headbutting";
     private static final String ANIM_MEOW = "meowing";
@@ -39,6 +41,8 @@ public class Cat {
     private void loadSprite() {
         try {
             sprite = ImageIO.read(new File("res/sprites/cat/cat.jpg"));
+            pawing = ImageIO.read(new File("res/sprites/cat/IDLE.png"));
+            headbutting = ImageIO.read(new File("res/sprites/cat/RUN.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,33 +61,30 @@ public class Cat {
         }
     }
 
-    public void draw(Graphics2D g2d) {
-        BufferedImage image = sprite;
-        g2d.drawImage(image, x, y, spriteWidth, spriteHeight, null);
-        if (sprite != null) {
-            // Draw the sprite
-            if (!isFacingRight) {
-                // Flip the sprite horizontally when facing left
-                g2d.drawImage(sprite, x + spriteWidth, y, -spriteWidth, spriteHeight, null);
-            } else {
-                g2d.drawImage(sprite, x, y, spriteWidth, spriteHeight, null);
-            }
-        } else {
-            // Fallback rectangle if sprite fails to load
-            g2d.setColor(Color.ORANGE);
-            g2d.fillRect(x, y, spriteWidth, spriteHeight);
-        }
-    }
 
     public void draw(Graphics2D g2d, int offsetX, int offsetY) {
-        BufferedImage image = sprite;
+        BufferedImage imageToDraw = sprite;
+        
+        // Select the appropriate sprite based on current animation
+        switch (currentAnimation) {
+            case ANIM_PAW:
+                imageToDraw = pawing;
+                break;
+            case ANIM_HEADBUTT:
+                imageToDraw = headbutting;
+                break;
+            default:
+                imageToDraw = sprite;
+                break;
+        }
+        
         int drawX = x + offsetX;
         int drawY = y + offsetY;
-        if (sprite != null) {
+        if (imageToDraw != null) {
             if (!isFacingRight) {
-                g2d.drawImage(sprite, drawX + spriteWidth, drawY, -spriteWidth, spriteHeight, null);
+                g2d.drawImage(imageToDraw, drawX + spriteWidth, drawY, -spriteWidth, spriteHeight, null);
             } else {
-                g2d.drawImage(sprite, drawX, drawY, spriteWidth, spriteHeight, null);
+                g2d.drawImage(imageToDraw, drawX, drawY, spriteWidth, spriteHeight, null);
             }
         } else {
             g2d.setColor(Color.ORANGE);
@@ -165,33 +166,48 @@ public class Cat {
     }
 
     public void headbutt(Human human) {
+        // Always show animation when button is pressed
+        currentAnimation = ANIM_HEADBUTT;
+        
+        // Only perform action if near human and facing them
         if (isNearHuman(human)) {
-            // Only headbutt if facing the human
             boolean isFacingHuman = (isFacingRight && human.getX() > x) || 
                                   (!isFacingRight && human.getX() < x);
             
             if (isFacingHuman) {
                 human.moveToNextRoom();
-                currentAnimation = "headbutting";
-                
-                // Return to idle animation after headbutt
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(500);
-                        currentAnimation = "idle";
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
             }
         }
+        
+        // Return to idle animation after headbutt
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+                currentAnimation = "idle";
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     public void paw(Human human) {
+        // Always show animation when button is pressed
+        currentAnimation = ANIM_PAW;
+        
+        // Only perform action if near human
         if (isNearHuman(human)) {
             human.interactWithCurrentObject();
-            currentAnimation = "pawing";
         }
+        
+        // Return to idle animation after pawing
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+                currentAnimation = "idle";
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private boolean isNearHuman(Human human) {
