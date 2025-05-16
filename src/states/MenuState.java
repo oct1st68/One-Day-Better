@@ -59,26 +59,9 @@ public class MenuState extends State {
 
     @Override
     public void draw(Graphics2D g2d) {
-        g2d.setColor(new Color(30, 32, 48));
-        g2d.fillRect(0, 0, 1280, 720);
-
-        g2d.setColor(new Color(180, 180, 200));
-        g2d.setFont(mainFont);
-        g2d.drawString("I was", 200, 180);
-        g2d.drawString("alone and afraid", 200, 230);
-        g2d.drawString("and sad...", 200, 280);
-        g2d.drawString("and everything", 200, 350);
-        g2d.drawString("was cold and", 200, 400);
-        g2d.drawString("dark...", 200, 450);
-
-        g2d.drawString("...but you came", 900, 230);
-        g2d.drawString("and made it", 900, 280);
-        g2d.drawString("better.", 900, 330);
-        g2d.drawString("Now it's my turn.", 900, 400);
-
         // Draw prompt
         g2d.setFont(promptFont);
         g2d.setColor(new Color(220, 220, 240));
-        g2d.drawString("Click Anywhere to Begin", 480, 650);
+        g2d.drawString("Click Anywhere to Play", 500, 650);
     }
 } 

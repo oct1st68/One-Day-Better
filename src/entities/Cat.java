@@ -9,6 +9,10 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.io.IOException;
+import states.PlayState;
+import java.awt.Rectangle;
+import java.util.HashMap;
+
 public class Cat {
     private int x, y;
     private int speed = 5;
@@ -20,6 +24,7 @@ public class Cat {
     private String currentAnimation = "idle";
     private Clip meowSound;
     private String meowSoundPath = "res/sounds/meow.wav";
+    private PlayState playState;
     
     // Sprite related fields
     private BufferedImage sprite;
@@ -30,12 +35,22 @@ public class Cat {
     private static final String ANIM_MEOW = "meowing";
     private int spriteWidth = 64;  
     private int spriteHeight = 64; 
+    private Map<String, BufferedImage> animations;
+    private boolean isHeadbutting = false;
+    private boolean isPawing = false;
+    private boolean isMeowing = false;
+    private int headbuttTimer = 0;
+    private static final int HEADBUTT_DURATION = 30;
 
     public Cat(int x, int y) {
         this.x = x;
         this.y = y;
         loadMeowSound();
         loadSprite();
+    }
+
+    public void setPlayState(PlayState playState) {
+        this.playState = playState;
     }
 
     private void loadSprite() {
@@ -48,7 +63,17 @@ public class Cat {
         }
     }
 
+
     public void update() {
+        // Update headbutt state
+        if (isHeadbutting) {
+            headbuttTimer++;
+            if (headbuttTimer >= HEADBUTT_DURATION) {
+                isHeadbutting = false;
+                currentAnimation = "idle";
+            }
+        }
+
         // Apply gravity
         velocityY += gravity;
         y += velocityY;
@@ -61,23 +86,20 @@ public class Cat {
         }
     }
 
-
     public void draw(Graphics2D g2d, int offsetX, int offsetY) {
         BufferedImage imageToDraw = sprite;
-        
         // Select the appropriate sprite based on current animation
         switch (currentAnimation) {
-            case ANIM_PAW:
+            case "pawing":
                 imageToDraw = pawing;
                 break;
-            case ANIM_HEADBUTT:
+            case "headbutting":
                 imageToDraw = headbutting;
                 break;
             default:
                 imageToDraw = sprite;
                 break;
         }
-        
         int drawX = x + offsetX;
         int drawY = y + offsetY;
         if (imageToDraw != null) {
@@ -112,7 +134,7 @@ public class Cat {
                 // Stop the sound after 1.5 seconds
                 new Thread(() -> {
                     try {
-                        Thread.sleep(1500); // 1.5 seconds
+                        Thread.sleep(1500);
                         if (meowSound.isRunning()) {
                             meowSound.stop();
                         }
@@ -127,13 +149,19 @@ public class Cat {
     }
 
     public void meow(Human human) {
-        meow();
-        if (human != null && !human.isCurrentRoomTasksCompleted()) {
-            // Wait 1 second before starting to follow
+        if (!isHeadbutting && !isPawing && !isMeowing) {
+            isMeowing = true;
+            currentAnimation = "meow";
+            
+            // Make human follow cat
+            human.startFollowing(this);
+            
+            // Reset animation after meow
             new Thread(() -> {
                 try {
-                    Thread.sleep(1000); // 1 second delay
-                    human.startFollowing(this);
+                    Thread.sleep(500);
+                    isMeowing = false;
+                    currentAnimation = "idle";
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -142,18 +170,18 @@ public class Cat {
     }
         
     public void moveLeft() {
-        if (x > 0) {
+        if (x > 0) {  // Only prevent going beyond the leftmost boundary
             x -= speed;
             isFacingRight = false;
-            currentAnimation = "walking";
+            currentAnimation = "walk";
         }
     }
 
     public void moveRight() {
-        if (x < 2000) {
+        if (x < 3600) {
             x += speed;
             isFacingRight = true;
-            currentAnimation = "walking";
+            currentAnimation = "walk";
         }
     }
 
@@ -161,53 +189,60 @@ public class Cat {
         if (!isJumping) {
             velocityY = jumpForce;
             isJumping = true;
-            currentAnimation = "jumping";
+            currentAnimation = "jump";
         }
     }
 
     public void headbutt(Human human) {
-        // Always show animation when button is pressed
-        currentAnimation = ANIM_HEADBUTT;
-        
-        // Only perform action if near human and facing them
-        if (isNearHuman(human)) {
-            boolean isFacingHuman = (isFacingRight && human.getX() > x) || 
-                                  (!isFacingRight && human.getX() < x);
-            
-            if (isFacingHuman && human.isCurrentRoomTasksCompleted()) {
-                human.moveToNextRoom();
+        if (!isHeadbutting && !isPawing && !isMeowing) {
+            isHeadbutting = true;
+            headbuttTimer = 0;
+            currentAnimation = "headbutting";
+            // Check if human is nearby (within 100 pixels)
+            int distanceToHuman = Math.abs(x - human.getX());
+            if (distanceToHuman <= 100 && playState != null) {
+                int humanRoomIdx = human.getX() / 1200;
+                // Only move if the current room is completed and the next room is not locked
+                if (humanRoomIdx < playState.rooms.size() - 1 && playState.rooms.get(humanRoomIdx).isCompleted()) {
+                    // The next room is only open if the current room is completed (darkness overlay logic)
+                    human.moveToNextRoom();
+                }
             }
         }
-        
-        // Return to idle animation after headbutt
-        new Thread(() -> {
-            try {
-                Thread.sleep(500);
-                currentAnimation = "idle";
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
 
     public void paw(Human human) {
-        // Always show animation when button is pressed
-        currentAnimation = ANIM_PAW;
-        
-        // Only perform action if near human and current room tasks are not completed
-        if (isNearHuman(human) && !human.isCurrentRoomTasksCompleted()) {
-            human.interactWithCurrentObject();
-        }
-        
-        // Return to idle animation after pawing
-        new Thread(() -> {
-            try {
-                Thread.sleep(500);
-                currentAnimation = "idle";
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        if (!isHeadbutting && !isPawing && !isMeowing) {
+            isPawing = true;
+            currentAnimation = "pawing";
+            // Find nearest interactable object to the cat
+            GameObject nearestObject = null;
+            double minDistance = Double.MAX_VALUE;
+            if (playState != null) {
+                for (GameObject object : playState.currentRoom.getObjects()) {
+                    if (object.isInteractable()) {
+                        double distance = Math.abs(object.getX() - this.x);
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            nearestObject = object;
+                        }
+                    }
+                }
             }
-        }).start();
+            if (nearestObject != null && minDistance <= 100) {
+                human.interactWithObject(nearestObject);
+            }
+            // Reset animation after paw
+            new Thread(() -> {
+                try {
+                    Thread.sleep(500);
+                    isPawing = false;
+                    currentAnimation = "idle";
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
     }
 
     private boolean isNearHuman(Human human) {

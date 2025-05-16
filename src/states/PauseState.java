@@ -16,8 +16,8 @@ public class PauseState extends State {
 
     public PauseState(GameStateManager gsm) {
         super(gsm);
-        titleFont = new Font("Arial", Font.BOLD, 48);
-        optionFont = new Font("Arial", Font.PLAIN, 32);
+        titleFont = new Font("Montserrat", Font.BOLD, 48);
+        optionFont = new Font("Montserrat", Font.PLAIN, 32);
         optionBounds = new Rectangle[options.length];
         mouseInput = gsm.getPanel().getMouseInput();
     }
