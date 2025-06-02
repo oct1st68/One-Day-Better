@@ -12,6 +12,10 @@ import java.io.IOException;
 import states.PlayState;
 import java.awt.Rectangle;
 import java.util.HashMap;
+<<<<<<< HEAD
+=======
+import entities.GameObject;
+>>>>>>> 8cfcec4 (2.6)
 
 public class Cat {
     private int x, y;
@@ -116,6 +120,7 @@ public class Cat {
 
     private void loadMeowSound() {
         try {
+<<<<<<< HEAD
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(meowSoundPath));
             meowSound = AudioSystem.getClip();
             meowSound.open(audioInputStream);
@@ -128,6 +133,35 @@ public class Cat {
         currentAnimation = "meowing";
         try {
             if (meowSound != null) {
+=======
+            // Get the absolute path to the sound file
+            File soundFile = new File(meowSoundPath);
+            if (!soundFile.exists()) {
+                // Try alternative path
+                soundFile = new File("src/" + meowSoundPath);
+                if (!soundFile.exists()) {
+                    System.err.println("Meow sound file not found");
+                    return;
+                }
+            }
+            
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+            meowSound = AudioSystem.getClip();
+            meowSound.open(audioInputStream);
+            audioInputStream.close();
+        } catch (Exception e) {
+            System.err.println("Error loading meow sound: " + e.getMessage());
+        }
+    }
+
+    private void playMeowSound() {
+        try {
+            if (meowSound != null) {
+                // Stop any currently playing meow
+                if (meowSound.isRunning()) {
+                    meowSound.stop();
+                }
+>>>>>>> 8cfcec4 (2.6)
                 meowSound.setFramePosition(0);
                 meowSound.start();
                 
@@ -144,7 +178,11 @@ public class Cat {
                 }).start();
             }
         } catch (Exception e) {
+<<<<<<< HEAD
             e.printStackTrace();
+=======
+            System.err.println("Error playing meow sound: " + e.getMessage());
+>>>>>>> 8cfcec4 (2.6)
         }
     }
 
@@ -152,9 +190,22 @@ public class Cat {
         if (!isHeadbutting && !isPawing && !isMeowing) {
             isMeowing = true;
             currentAnimation = "meow";
+<<<<<<< HEAD
             
             // Make human follow cat
             human.startFollowing(this);
+=======
+            playMeowSound();
+            
+            // Check if human is in the same room
+            int humanRoom = human.getX() / 1200;  // Each room is 1200 pixels wide
+            int catRoom = this.x / 1200;
+            
+            if (humanRoom == catRoom) {  // Only interact if in same room
+                // Make human move to cat's position
+                human.startFollowing(this);
+            }
+>>>>>>> 8cfcec4 (2.6)
             
             // Reset animation after meow
             new Thread(() -> {
@@ -168,6 +219,53 @@ public class Cat {
             }).start();
         }
     }
+<<<<<<< HEAD
+=======
+
+    public void paw(Human human) {
+        if (!isHeadbutting && !isPawing && !isMeowing) {
+            isPawing = true;
+            currentAnimation = "pawing";
+            
+            // Check if human is in the same room
+            int humanRoom = human.getX() / 1200;  // Each room is 1200 pixels wide
+            int catRoom = this.x / 1200;
+            
+            if (humanRoom == catRoom) {  // Only interact if in same room
+                // Find nearest interactable object
+                GameObject nearestObject = null;
+                double minDistance = Double.MAX_VALUE;
+                if (playState != null) {
+                    for (GameObject object : playState.currentRoom.getObjects()) {
+                        if (object.isInteractable() && !object.isRemoved()) {
+                            double distance = Math.abs(object.getX() - this.x);
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                nearestObject = object;
+                            }
+                        }
+                    }
+                }
+                
+                // If there's an object nearby, make human interact with it
+                if (nearestObject != null && minDistance <= 100) {
+                    human.interactWithObject(nearestObject);
+                }
+            }
+            
+            // Reset animation after paw
+            new Thread(() -> {
+                try {
+                    Thread.sleep(500);
+                    isPawing = false;
+                    currentAnimation = "idle";
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
+    }
+>>>>>>> 8cfcec4 (2.6)
         
     public void moveLeft() {
         if (x > 0) {  // Only prevent going beyond the leftmost boundary
@@ -198,19 +296,32 @@ public class Cat {
             isHeadbutting = true;
             headbuttTimer = 0;
             currentAnimation = "headbutting";
+<<<<<<< HEAD
+=======
+            
+>>>>>>> 8cfcec4 (2.6)
             // Check if human is nearby (within 100 pixels)
             int distanceToHuman = Math.abs(x - human.getX());
             if (distanceToHuman <= 100 && playState != null) {
                 int humanRoomIdx = human.getX() / 1200;
+<<<<<<< HEAD
                 // Only move if the current room is completed and the next room is not locked
                 if (humanRoomIdx < playState.rooms.size() - 1 && playState.rooms.get(humanRoomIdx).isCompleted()) {
                     // The next room is only open if the current room is completed (darkness overlay logic)
+=======
+                int catRoomIdx = this.x / 1200;
+                
+                // Only move if cat and human are in the same room
+                if (humanRoomIdx == catRoomIdx && humanRoomIdx < playState.rooms.size() - 1 && 
+                    playState.rooms.get(humanRoomIdx).isCompleted()) {
+>>>>>>> 8cfcec4 (2.6)
                     human.moveToNextRoom();
                 }
             }
         }
     }
 
+<<<<<<< HEAD
     public void paw(Human human) {
         if (!isHeadbutting && !isPawing && !isMeowing) {
             isPawing = true;
@@ -245,6 +356,8 @@ public class Cat {
         }
     }
 
+=======
+>>>>>>> 8cfcec4 (2.6)
     private boolean isNearHuman(Human human) {
         int distance = Math.abs(x - human.getX());
         return distance < 50; 

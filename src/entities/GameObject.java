@@ -19,6 +19,11 @@ public class GameObject {
     private int interactionProgress;
     private BufferedImage sprite;
     private Rectangle interactionBounds;
+<<<<<<< HEAD
+=======
+    private boolean isCatNear = false;
+    private static final int CAT_DETECTION_RANGE = 100;
+>>>>>>> 8cfcec4 (2.6)
 
     public GameObject(int x, int y, int width, int height, String name, String description, boolean isInteractable) {
         this.x = x;
@@ -57,14 +62,35 @@ public class GameObject {
         }
     }
 
+<<<<<<< HEAD
+=======
+    public void checkCatProximity(Cat cat) {
+        if (cat != null) {
+            int distance = Math.abs(cat.getX() - this.x);
+            isCatNear = distance <= CAT_DETECTION_RANGE;
+        } else {
+            isCatNear = false;
+        }
+    }
+
+>>>>>>> 8cfcec4 (2.6)
     public void draw(Graphics2D g2d, int offsetX, int offsetY) {
         if (isRemoved) return;
 
         if (sprite != null) {
             g2d.drawImage(sprite, x + offsetX, y + offsetY, width, height, null);
         } else {
+<<<<<<< HEAD
             // Draw fallback rectangle
             g2d.setColor(Color.GRAY);
+=======
+            // Draw fallback rectangle with color based on cat proximity
+            if (isCatNear) {
+                g2d.setColor(new Color(255, 200, 0)); // Orange-yellow when cat is near
+            } else {
+                g2d.setColor(Color.GRAY);
+            }
+>>>>>>> 8cfcec4 (2.6)
             g2d.fillRect(x + offsetX, y + offsetY, width, height);
         }
 

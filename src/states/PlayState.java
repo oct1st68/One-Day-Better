@@ -22,14 +22,24 @@ public class PlayState extends State {
     private Clip bgMusic;
     private int cameraX = 0;
     private final int SCREEN_WIDTH = 1280;
+<<<<<<< HEAD
     private final int WORLD_WIDTH = 4800; // Increased for 4 rooms
+=======
+    private final int WORLD_WIDTH = 15000; // Increased for 4 rooms
+>>>>>>> 8cfcec4 (2.6)
     public List<Room> rooms;
     public Room currentRoom;
 
     public PlayState(GameStateManager gsm, KeyboardInput keyboardInput) {
         super(gsm);
+<<<<<<< HEAD
         human = new Human(100, 300);
         cat = new Cat(50, 300);
+=======
+        human = new Human(50, 150);
+        cat = new Cat(25, 150);
+        human.setPlayState(this);
+>>>>>>> 8cfcec4 (2.6)
         cat.setPlayState(this);
         this.keyboardInput = keyboardInput;
         initializeRooms();
@@ -38,28 +48,59 @@ public class PlayState extends State {
 
     private void initializeRooms() {
         rooms = new ArrayList<>();
+<<<<<<< HEAD
         // Living Room (0-1200)
         Room room1 = new Room(0, "Living Room", 0, 1200, new Color(240, 240, 220));
+=======
+        // Bedroom (0-1200) -- USE IMAGE
+        Room room1 = new Room(
+            0,
+            "Bedroom",
+            0,
+            1200,
+            new Color(220, 220, 240),
+            "res/sprites/room/bedroom.png"
+        );
+>>>>>>> 8cfcec4 (2.6)
         room1.addObject(new GameObject(200, 400, 100, 100, "TV", "A large flat-screen TV", true));
         room1.addObject(new GameObject(500, 500, 150, 80, "Sofa", "A comfortable sofa", true));
         room1.addObject(new GameObject(900, 450, 120, 100, "Bookshelf", "A wooden bookshelf", true));
         rooms.add(room1);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8cfcec4 (2.6)
         // Kitchen (1200-2400)
         Room room2 = new Room(1, "Kitchen", 1200, 1200, new Color(220, 240, 220));
         room2.addObject(new GameObject(1500, 400, 120, 120, "Fridge", "A refrigerator with food", true));
         room2.addObject(new GameObject(1900, 500, 100, 100, "Stove", "A cooking stove", true));
         room2.addObject(new GameObject(2300, 450, 100, 100, "Sink", "A kitchen sink", true));
         rooms.add(room2);
+<<<<<<< HEAD
         // Bedroom (2400-3600)
         Room room3 = new Room(2, "Bedroom", 2400, 1200, new Color(220, 220, 240));
         room3.addObject(new GameObject(2700, 400, 150, 100, "Bed", "A cozy bed", true));
         room3.addObject(new GameObject(3100, 500, 100, 100, "Desk", "A study desk", true));
         room3.addObject(new GameObject(3500, 450, 120, 100, "Wardrobe", "A wooden wardrobe", true));
         rooms.add(room3);
+=======
+
+        // Living Room (2400-3600)
+        Room room3 = new Room(2, "Living Room", 2400, 1200, new Color(240, 220, 220));
+        room3.addObject(new GameObject(2700, 400, 120, 120, "Table", "A coffee table", true));
+        room3.addObject(new GameObject(3000, 500, 150, 80, "Chair", "A comfortable chair", true));
+        room3.addObject(new GameObject(3300, 450, 100, 100, "Lamp", "A floor lamp", true));
+        rooms.add(room3);
+
+>>>>>>> 8cfcec4 (2.6)
         // Empty Room (3600-4800)
         Room room4 = new Room(3, "Empty Room", 3600, 1200, new Color(200, 200, 200));
         // No objects added
         rooms.add(room4);
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 8cfcec4 (2.6)
         currentRoom = room1;
     }
 
@@ -118,8 +159,22 @@ public class PlayState extends State {
             cat.headbutt(human);
         }
         cat.update();
+<<<<<<< HEAD
         // Update current room and its objects
         updateCurrentRoom();
+=======
+        
+        // Update current room and its objects
+        updateCurrentRoom();
+        
+        // Check cat proximity to objects
+        if (currentRoom != null) {
+            for (GameObject object : currentRoom.getObjects()) {
+                object.checkCatProximity(cat);
+            }
+        }
+        
+>>>>>>> 8cfcec4 (2.6)
         // Update camera position
         updateCamera();
         // Check for pause
@@ -231,7 +286,11 @@ public class PlayState extends State {
                 g2d.setColor(new Color(0, 0, 0, 180));
                 g2d.fillRect(thisRoom.getX() - cameraX, 0, thisRoom.getWidth(), 720);
             }
+<<<<<<< HEAD
         }
+=======
+        } 
+>>>>>>> 8cfcec4 (2.6)
     }
 
     public KeyboardInput getKeyboardInput() {
