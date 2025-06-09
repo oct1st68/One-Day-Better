@@ -7,7 +7,6 @@ import javax.sound.sampled.Clip;
 import java.io.File;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.util.Map;
 import java.io.IOException;
 import states.PlayState;
 
