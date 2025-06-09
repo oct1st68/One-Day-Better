@@ -8,7 +8,10 @@ public class GameStateManager {
     private MenuState menuState;
     private PlayState playState;
     private PauseState pauseState;
+<<<<<<< HEAD
     private EndingState endingState;
+=======
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
     private GamePanel panel;
 
     public GameStateManager(GamePanel panel) {
@@ -17,6 +20,7 @@ public class GameStateManager {
         menuState = new MenuState(this);
         playState = new PlayState(this, panel.getKeyboardInput());
         pauseState = new PauseState(this);
+<<<<<<< HEAD
         endingState = new EndingState(this);
     }
 
@@ -31,10 +35,22 @@ public class GameStateManager {
         
         currentState = state;
         
+=======
+    }
+
+    public void setState(GameState state) {
+        if (currentState == GameState.MENU) {
+            menuState.stopMusic();
+        } else if (currentState == GameState.PLAYING) {
+            playState.pauseMusic();
+        }
+        currentState = state;
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
         if (state == GameState.MENU) {
             menuState.reset();
             menuState.playMusic();
         } else if (state == GameState.PLAYING) {
+<<<<<<< HEAD
             // If coming from menu, start a fresh game
             if (prevState == GameState.MENU) {
                 playState = new PlayState(this, panel.getKeyboardInput());
@@ -42,6 +58,9 @@ public class GameStateManager {
             playState.resetMusic();
         } else if (state == GameState.ENDING) {
             endingState = new EndingState(this);
+=======
+            playState.resetMusic();
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
         }
     }
 
@@ -53,9 +72,12 @@ public class GameStateManager {
             case PLAYING:
                 playState.update();
                 break;
+<<<<<<< HEAD
             case ENDING:
                 endingState.update();
                 break;
+=======
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
             case PAUSED:
                 pauseState.update();
                 break;
@@ -74,9 +96,12 @@ public class GameStateManager {
                 playState.draw(g2d); // Draw game in background
                 pauseState.draw(g2d);
                 break;
+<<<<<<< HEAD
             case ENDING:
                 endingState.draw(g2d);
                 break;
+=======
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
         }
     }
 

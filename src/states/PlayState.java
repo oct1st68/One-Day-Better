@@ -14,9 +14,12 @@ import javax.sound.sampled.Clip;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+<<<<<<< HEAD
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
+=======
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
 
 public class PlayState extends State {
     private Human human;
@@ -28,6 +31,7 @@ public class PlayState extends State {
     private final int WORLD_WIDTH = 6000; // 5 rooms * 1200px each
     public List<Room> rooms;
     public Room currentRoom;
+<<<<<<< HEAD
     private String currentMusicFile = "res/sounds/bgmusicmenu.wav";
     private boolean isEnding = false;
     private BufferedImage endingImage;
@@ -35,6 +39,8 @@ public class PlayState extends State {
     private static final long ENDING_DURATION = 5000; // 5 seconds for ending scene
     private long bothInRoom4Time = 0;
     private boolean bothInRoom4Started = false;
+=======
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
 
     public PlayState(GameStateManager gsm, KeyboardInput keyboardInput) {
         super(gsm);
@@ -42,11 +48,16 @@ public class PlayState extends State {
         initializeRooms();
 
         human = new Human(50, 150);
+<<<<<<< HEAD
         cat = new Cat(50, 150);
+=======
+        cat = new Cat(25, 150);
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
         human.setPlayState(this);
         cat.setPlayState(this);
         this.keyboardInput = keyboardInput;
         playMusic();
+<<<<<<< HEAD
         
         // Load ending image
         try {
@@ -54,6 +65,8 @@ public class PlayState extends State {
         } catch (IOException e) {
             e.printStackTrace();
         }
+=======
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
     }
 
     private void initializeRooms() {
@@ -68,28 +81,49 @@ public class PlayState extends State {
             "res/sprites/room/Bedroom/background.png"
         );
         // Add scattered trash on the floor (these will disappear when cleaned)
+<<<<<<< HEAD
         room1.addObject(new GameObject(200, 400, 300, 200, "Clothes", true));
         room1.addObject(new GameObject(600,530, 200, 200, "Floor Trash", true));
         
         // Add empty trash can (will become full when cleaning is done)
         room1.addObject(new GameObject(850, 500, 150, 150, "Trash Can",  true));
+=======
+        room1.addObject(new GameObject(200, 400, 300, 200, "Clothes", "", true));
+        room1.addObject(new GameObject(600,530, 200, 200, "Floor Trash", "Trash scattered on the floor", true));
+        
+        // Add empty trash can (will become full when cleaning is done)
+        room1.addObject(new GameObject(850, 500, 150, 150, "Trash Can", "Empty trash can - clean the room to fill it", true));
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
         rooms.add(room1);
 
 
         // Bathroom (1200-2400)
         Room room2 = new Room(1, "Bathroom", 1200, 1200, new Color(220, 240, 220),"res/sprites/room/Bathroom/Bathroom.png");
         // Add bathtub (dirty -> clean)
+<<<<<<< HEAD
         room2.addObject(new GameObject(1500, 260, 450, 400, "Bathtub",  true));
+=======
+        room2.addObject(new GameObject(1500, 260, 450, 400, "Bathtub", "A dirty bathtub that needs cleaning", true));
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
         rooms.add(room2);
 
         // Kitchen (2400-3600)
         Room room3 = new Room(2, "Kitchen", 2400, 1200, new Color(240, 220, 220),"res/sprites/room/Kitchen/Kitchen.png");
+<<<<<<< HEAD
         room3.addObject(new GameObject(2700, 550, 120, 120, "Cat food",  true));
         room3.addObject(new GameObject(2930, 280, 150, 150, "Dishes",  true));
+=======
+        room3.addObject(new GameObject(2700, 550, 120, 120, "Cat food", "Empty cat food bowl that needs filling", true));
+        room3.addObject(new GameObject(2930, 300, 150, 150, "Dishes", "Dirty dishes that need cleaning", true));
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
         rooms.add(room3);
 
         // Living Room (3600-4800)
         Room room4 = new Room(3, "Living Room", 3600, 1200, new Color(220, 220, 240),"res/sprites/room/Living room/Living room.png");
+<<<<<<< HEAD
+=======
+        room4.addObject(new GameObject(3800, 400, 120, 120, "TV", "A TV that needs cleaning", true));
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
         rooms.add(room4);
 
         Room room5 = new Room(4, "Study", 4800, 1200, new Color(235, 235, 210));
@@ -101,7 +135,11 @@ public class PlayState extends State {
     private void playMusic() {
         if (isMusicPlaying()) return;
         try {
+<<<<<<< HEAD
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(currentMusicFile));
+=======
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("res/sounds/bgmusicmenu.wav"));
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
             bgMusic = AudioSystem.getClip();
             bgMusic.open(audioInputStream);
             bgMusic.loop(Clip.LOOP_CONTINUOUSLY);
@@ -129,6 +167,7 @@ public class PlayState extends State {
         }
     }
 
+<<<<<<< HEAD
     private void changeMusic(String musicFile) {
         if (currentMusicFile.equals(musicFile)) return;
         currentMusicFile = musicFile;
@@ -162,6 +201,10 @@ public class PlayState extends State {
             bothInRoom4Time = 0;
         }
 
+=======
+    @Override
+    public void update() {
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
         // Update human
         human.update();
         // Update cat based on keyboard input
@@ -220,12 +263,15 @@ public class PlayState extends State {
             if (room.isPointInRoom(cat.getX())) {
                 if (currentRoom != room) {
                     currentRoom = room;
+<<<<<<< HEAD
                     // Change music based on room
                     if (room.getName().equals("Kitchen") || room.getName().equals("Living Room")) {
                         changeMusic("res/sounds/happy.wav");
                     } else {
                         changeMusic("res/sounds/bgmusicmenu.wav");
                     }
+=======
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
                 }
                 // Update current room and its objects
                 currentRoom.update();
@@ -289,6 +335,7 @@ public class PlayState extends State {
 
     @Override
     public void draw(Graphics2D g2d) {
+<<<<<<< HEAD
         if (isEnding) {
             // Draw ending scene
             if (endingImage != null) {
@@ -300,6 +347,8 @@ public class PlayState extends State {
             return;
         }
 
+=======
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
         // Draw all room backgrounds first
         for (Room room : rooms) {
             room.drawBackground(g2d, cameraX);
@@ -349,6 +398,7 @@ public class PlayState extends State {
     public KeyboardInput getKeyboardInput() {
         return keyboardInput;
     }
+<<<<<<< HEAD
 
     // Add this method to trigger the ending
     public void triggerEnding() {
@@ -357,4 +407,6 @@ public class PlayState extends State {
         stopMusic(); // Stop the background music
         // You might want to play ending music here
     }
+=======
+>>>>>>> 11cb779a08db09d579c06ac82b879a228bbfae49
 } 
