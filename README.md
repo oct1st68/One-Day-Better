@@ -1,2 +1,2 @@
 # One-Day-Better
-A OOP Game project from HCMIU
+An OOP Game project from HCMIU
