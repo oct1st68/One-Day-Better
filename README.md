@@ -10,7 +10,7 @@ This game starts with a depressed human unable to complete their daily chores. T
 Java Development Kit 24
 
 
-# Build from source
+## Build from source
 * Clone the project
 ```
 git clone https://github.com/oct1st68/One-Day-Better.git
